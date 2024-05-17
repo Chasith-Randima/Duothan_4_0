@@ -391,11 +391,11 @@ const AllUsers = () => {
                               {user.role}
                             </td>
 
-                            <td className="px-6 text-sm font-medium dark:text-gray-400">
+                            <td className="px-6 text-sm font-medium dark:text-gray-400"     onClick={()=> goTo(`/users/updateUser?userId=${user._id}`)}>
                               <span
                                 className="inline-block px-2 py-1 text-green-700 bg-green-100 rounded-md dark:bg-gray-800 dark:text-gray-400 cursor-pointer"
                                 // onClick={() => handleDelete(user._id)}
-                                onClick={()=> goTo(`/users/updateUser?userId=${user._id}`)}
+                            
                               >
                                 Update
                               </span>

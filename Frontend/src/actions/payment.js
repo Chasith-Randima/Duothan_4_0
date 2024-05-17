@@ -36,6 +36,8 @@ export const allpayments = (paramsData) => {
     method: "GET",
     // params: { ...query },
     params: {
+      user:paramsData.userId,
+      // username:paramsData.username
       //   page: paramsData.page,
       //   limit: paramsData.limit,
     //   article: paramsData.articleId,

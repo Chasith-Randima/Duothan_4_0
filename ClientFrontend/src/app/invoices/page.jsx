@@ -1,30 +1,25 @@
-
-
 "use client";
-import { useEffect, useState } from "react";
+
+import { allArticles,deleteArticle,searchArticles } from "@/actions/article";
+import { useState, useEffect } from "react";
 import { getCookie } from "@/actions/auth";
-import { getProfile } from "@/actions/user";
 import SideBar from "@/components/SideBar";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import Modal from "@/components/Modal";
-import Map from "@/components/Map";
-import { useSearchParams } from "next/navigation";
-import { allpayments } from "@/actions/payment";
-import { allArticles,searchArticles } from "@/actions/article";
+import { brands } from "@/constants";
+import dots from "dots";
+import { allpayments, deletePayment } from "@/actions/payment";
 
-const Profile = () => {
-  const [userData, setUserData] = useState({});
-  const searchParams = useSearchParams();
-  const [paramsData, setParamsData] = useState({
-    userId: searchParams.get("userId"),
-
-  });
-
+const AllArticles = () => {
+  const router = useRouter();
   const [allData, setAllData] = useState();
   const [show, setShow] = useState(false);
   const [limit, setLimit] = useState(9);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [deleted, setDeleted] = useState(false);
+
   const [alert, setAlert] = useState({
     message: "",
     error: false,
@@ -42,53 +37,56 @@ const Profile = () => {
   const [searchValues, setSearchValues] = useState({
     search: "",
   });
+
   const { search } = searchValues;
   const { sort, publisher, brand, quantity } = filterValues;
 
-
-  useEffect(() => {
-    setAlert({ ...alert, loading: true });
-    fetchUserProfile();
-  }, []);
-
-  const fetchUserProfile = async () => {
-    let token = getCookie("token_user");
-    // let userId;
-    // if (localStorage.getItem("user")) {
-    //   userId = JSON.parse(localStorage.getItem("user"))._id;
-    // }
-
-    try {
-      const response = await getProfile(paramsData.userId, token);
-      if (response.status === "success") {
-        setUserData(response.doc);
-        setAlert({
-          ...alert,
-          loading: false,
-          message: response.message,
-          success: true,
-        });
-        window.setTimeout(() => {
-          setAlert({ ...alert, success: false, message: "" });
-        }, 1000);
-      } else {
-        setAlert({
-          ...alert,
-          loading: false,
-          message: response.message,
-          error: true,
-        });
-      }
-    } catch (error) {
-      setAlert({
-        ...alert,
-        loading: false,
-        message: error.message,
-        error: true,
-      });
-    }
+  const resetAlert = () => {
+    setAlert({ message: "", error: false, loading: false, success: false });
+  };
+  const initialSet = () => {
+    setAllData(data);
   };
 
+  const handleDelete = async (id) => {
+    let token;
+
+    if (getCookie("token_user")) {
+      token = getCookie("token_user");
+      let clicked = confirm(`You are about to delete ${id} `);
+
+      if (clicked) {
+        await deletePayment(id, token)
+          .then((data) => {
+            // console.log(data);
+            setAlert({
+              ...alert,
+              loading: false,
+              message: "Product deleted successfully..",
+              error: false,
+              success: true,
+            });
+            setDeleted(!deleted);
+            // resetAlert()
+          })
+          .catch((err) => {
+            console.log(err);
+            setAlert({
+              ...alert,
+              loading: false,
+              message: "There was a error deleting Product...",
+              error: false,
+              success: true,
+            });
+          });
+      }
+
+      //   }
+    } else {
+      alert("You dont't have the permission to perform this action...");
+      return;
+    }
+  };
 
   const handleChange = (name) => (e) => {
     e.preventDefault();
@@ -103,10 +101,7 @@ const Profile = () => {
     setFilterValues({ sort: "", publisher: "", status: "" });
   };
 
-  const resetAlert = () => {
-    setAlert({ message: "", error: false, loading: false, success: false });
-  };
-
+  // ---------------pagination--------------------------
   const nextPage = () => {
     setPage((oldPage) => {
       let nextPage = oldPage + 1;
@@ -126,48 +121,29 @@ const Profile = () => {
     });
   };
 
+  // ---------------pagination--------------------------
 
-    // ---------------pagination--------------------------
+  useEffect(() => {
+    // console.log("page changed...", page);
 
-    useEffect(() => {
-      // console.log("page changed...", page);
-  
-      handleSubmit();
-      // console.log(allData);
-    }, [page, filterValues, deleted]);
-  
-    useEffect(() => {
-      handleSearchSubmit();
-    }, [searchValues]);
-  
-    const handleSearchSubmit = async () => {
-      // e.preventDefault();
-      // console.log("triggerd..");
-      // console.log(search);
-      await searchArticles({ search: search })
-        .then((data) => {
-          // console.log(data, "from search results");
-          // console.log(data);
-          if (data.status && data.status == "success") {
-            if (data.results == 0) {
-              setAlert({
-                ...alert,
-                loading: false,
-                message: data.message,
-                error: false,
-                success: true,
-              });
-  
-              window.setTimeout(() => {
-                resetAlert();
-              }, 1000);
-            } else {
-              setAllData(data.data);
-              // console.log(data.totalCount);
-              // let totalCount = data.totalCount;
-              // setTotalPages(Math.ceil(totalCount / limit));
-              setShow(false);
-            }
+    handleSubmit();
+    // console.log(allData);
+  }, [page, filterValues, deleted]);
+
+  useEffect(() => {
+    handleSearchSubmit();
+  }, [searchValues]);
+
+  const handleSearchSubmit = async () => {
+    // e.preventDefault();
+    // console.log("triggerd..");
+    // console.log(search);
+    await searchArticles({ search: search })
+      .then((data) => {
+        // console.log(data, "from search results");
+        // console.log(data);
+        if (data.status && data.status == "success") {
+          if (data.results == 0) {
             setAlert({
               ...alert,
               loading: false,
@@ -175,163 +151,112 @@ const Profile = () => {
               error: false,
               success: true,
             });
-  
+
             window.setTimeout(() => {
               resetAlert();
             }, 1000);
-          }
-  
-          // console.log(allData);
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    };
-  
-    const handleSubmit = async (e) => {
-      if (e) {
-        e.preventDefault();
-      }
-      let params;
-      setAlert({ ...alert, loading: true });
-  
-      params = {
-        limit,
-        page,
-      };
-  
-      if (filterValues?.sort) {
-        params.sort = filterValues.sort;
-      }
-      if (filterValues?.publisher) {
-        params.publisher = filterValues.publisher;
-      }
-      if (filterValues?.brand) {
-        params.brand = filterValues.brand;
-      }
-      if (filterValues?.quantity) {
-        params.quantity = filterValues.quantity;
-      }
-      // if (searchValues?.search) {
-      //   params.orderId = searchValues.search;
-      // }
-      let token = getCookie("token_user");
-      params.userId = paramsData.userId
-  
-      await allpayments(params)
-        .then((data) => {
-          console.log(data);
-          if (data.status && data.status == "success") {
-            setAllData(data.doc);
-            console.log(data.totalCount);
-            let totalCount = data.totalCount;
-            setTotalPages(Math.ceil(totalCount / limit));
+          } else {
+            setAllData(data.data);
+            // console.log(data.totalCount);
+            // let totalCount = data.totalCount;
+            // setTotalPages(Math.ceil(totalCount / limit));
             setShow(false);
-  
-            setAlert({
-              ...alert,
-              loading: false,
-              message: data.message,
-              error: false,
-              success: true,
-            });
-  
-            window.setTimeout(() => {
-              resetAlert();
-            }, 1000);
           }
-  
-          // return { data };
-        })
-        .catch((err) => {
-          console.log(err);
-  
           setAlert({
             ...alert,
             loading: false,
-            message: err.message,
-            error: true,
-            success: false,
+            message: data.message,
+            error: false,
+            success: true,
           });
+
+          window.setTimeout(() => {
+            resetAlert();
+          }, 1000);
+        }
+
+        // console.log(allData);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
+  const handleSubmit = async (e) => {
+    if (e) {
+      e.preventDefault();
+    }
+    let params;
+    setAlert({ ...alert, loading: true });
+
+    params = {
+      limit,
+      page,
+    };
+
+    if (filterValues?.sort) {
+      params.sort = filterValues.sort;
+    }
+    if (filterValues?.publisher) {
+      params.publisher = filterValues.publisher;
+    }
+    if (filterValues?.brand) {
+      params.brand = filterValues.brand;
+    }
+    if (filterValues?.quantity) {
+      params.quantity = filterValues.quantity;
+    }
+    // if (searchValues?.search) {
+    //   params.orderId = searchValues.search;
+    // }
+    let token = getCookie("token_user");
+
+    await allpayments(params)
+      .then((data) => {
+        console.log(data);
+        if (data.status && data.status == "success") {
+          setAllData(data.doc);
+          console.log(data.totalCount);
+          let totalCount = data.totalCount;
+          setTotalPages(Math.ceil(totalCount / limit));
+          setShow(false);
+
+          setAlert({
+            ...alert,
+            loading: false,
+            message: data.message,
+            error: false,
+            success: true,
+          });
+
+          window.setTimeout(() => {
+            resetAlert();
+          }, 1000);
+        }
+
+        // return { data };
+      })
+      .catch((err) => {
+        console.log(err);
+
+        setAlert({
+          ...alert,
+          loading: false,
+          message: err.message,
+          error: true,
+          success: false,
         });
-    };
-    console.log(allData, "is there data...");
-  
-    const goTo = (link) => {
-      router.push(link);
-    };
-  
+      });
+  };
+  console.log(allData, "is there data...");
+
+  const goTo = (link) => {
+    router.push(link);
+  };
+
   return (
     <>
       <SideBar>
-        <section>
-          <div className="mt-10">
-          <h2 className="px-6 py-4 pb-4 text-xl font-medium border-b border-gray-300 dark:border-gray-700 dark:text-gray-400">
-                 <span className="text-4xl">Hello!....</span><span className="text-4xl font-bold capitalize"> {userData && userData.username}</span>
-                </h2>
-          </div>
-        </section>
-        <section className="">
-          {paramsData && paramsData?.userId && <Map userId={paramsData.userId}/>}
-        </section>
-        <section className="bg-white dark:bg-gray-900">
-          {alert && alert.message && <Modal alert={alert} />}
-          <div className="py-8 px-4 mx-auto max-w-2xl lg:pt-16 lg:pb-4">
-            <h2 className="mb-4 text-xl font-bold text-gray-900 dark:text-white">
-              User Profile
-            </h2>
-            <div className="grid gap-4 sm:grid-cols-2 sm:gap-6">
-              <div>
-                <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                  First Name
-                </label>
-                <p className="text-lg text-gray-800 dark:text-white">
-                  {userData.firstName}
-                </p>
-              </div>
-              <div>
-                <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                  Last Name
-                </label>
-                <p className="text-lg text-gray-800 dark:text-white">
-                  {userData.lastName}
-                </p>
-              </div>
-              <div>
-                <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                  Mobile Number
-                </label>
-                <p className="text-lg text-gray-800 dark:text-white">
-                  {userData.mobileNumber}
-                </p>
-              </div>
-              <div>
-                <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                  Username
-                </label>
-                <p className="text-lg text-gray-800 dark:text-white">
-                  {userData.username}
-                </p>
-              </div>
-              <div>
-                <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                  Email
-                </label>
-                <p className="text-lg text-gray-800 dark:text-white">
-                  {userData.email}
-                </p>
-              </div>
-              <div>
-                <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                  Description
-                </label>
-                <p className="text-lg text-gray-800 dark:text-white">
-                  {userData.description}
-                </p>
-              </div>
-            </div>
-          </div>
-        </section>
         <section className="items-center lg:flex bg-gray-50 lg:h-full mt-12 font-poppins dark:bg-gray-800 ">
           {alert && alert?.message && (
             <Modal alert={alert} setAlert={resetAlert} />
@@ -585,4 +510,5 @@ const Profile = () => {
   );
 };
 
-export default Profile;
+export default AllArticles;
+

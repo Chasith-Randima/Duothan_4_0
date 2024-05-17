@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Modal from "@/components/Modal";
 import { getCookie } from "@/actions/auth";
+import SideBar from "@/components/SideBar";
 
 const PunchCard = () => {
   const router = useRouter();
@@ -132,6 +133,7 @@ const PunchCard = () => {
 
   return (
     <>
+    <SideBar>
       <div className="min-h-screen bg-gray-100 py-6 flex flex-col justify-center sm:py-12">
         {alert && alert?.message && (
           <Modal alert={alert} setAlert={resetAlert} />
@@ -221,6 +223,7 @@ const PunchCard = () => {
           </div>
         </div>
       </div>
+      </SideBar>
     </>
   );
 };

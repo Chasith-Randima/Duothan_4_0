@@ -16,7 +16,7 @@ const Footer = () => (
         /> */}
           <div className="ml-8 text-lg font-bold text-gray-800  hidden md:flex">
           <Link href={"/"} >
-            NewsCrape.Ai
+          Neotropolis
         </Link>
           </div>
         <p className="text-base text-gray-700">

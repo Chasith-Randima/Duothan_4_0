@@ -310,17 +310,36 @@ const Dashboard = () => {
 
   return (
     <SideBar>
-    <div className="dashboard">
-      {/* Dashboard card to display user count */}
+    {/* <div className="dashboard">
+
       <div className="dashboard-card">
         <h2>Total User Count</h2>
         <p>Status: {userCountData.status}</p>
         <p>Message: {userCountData.message}</p>
         <p>Total Count: {userCountData.totalCount}</p>
       </div>
-      {/* Other dashboard components */}
-    </div>
+ 
+    </div> */}
 
+<div className="flex flex-wrap gap-4 p-4 dashboard mt-10">
+        {/* Dashboard card to display user count */}
+        <div className="flex-1 p-6 bg-white border border-gray-200 rounded-lg shadow-md dashboard-card box">
+          <h2 className="mb-2 text-xl font-bold">Total User Count</h2>
+          {/* <p className="mb-1">Status: {userCountData.status}</p>
+          <p className="mb-1">Message: {userCountData.message}</p> */}
+          <p className="mb-1">Total Count: {userCountData.totalCount}</p>
+        </div>
+
+        {/* Dashboard card to display total payment */}
+        <div className="flex-1 p-6 bg-white border border-gray-200 rounded-lg shadow-md dashboard-card box">
+          <h2 className="mb-2 text-xl font-bold">Total Payments</h2>
+          {/* <p className="mb-1">Status: Active</p> */}
+          {/* <p className="mb-1">Message: {totalPaymentData.message}</p> */}
+          <p className="mb-1">Total Payment: 100</p>
+        </div>
+
+        {/* Other dashboard components */}
+      </div>
     </SideBar>
   );
 };

@@ -18,7 +18,7 @@ const NavBar = () => {
       <div className="flex flex-row items-center p-1 justify-between bg-gray-800 shadow-xs fixed top-0 w-full z-50">
         <Link href={"/"}>
           <div className="ml-8 text-lg font-bold text-white hidden md:flex">
-            NewsCrape.Ai
+          Neotropolis
           </div>
         </Link>
         {/* <span className="w-screen md:w-1/3 h-10 bg-gray-200 cursor-pointer border border-gray-300 text-sm rounded-full flex">
