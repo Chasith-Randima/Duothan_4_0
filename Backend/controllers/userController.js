@@ -32,7 +32,7 @@ exports.resizeUserImages = catchAsync(async (req, res, next) => {
 
   await Promise.all(
     req.files.images.map(async (file, i) => {
-      const filename = `user-${req.user._id}-${Date.now()}-${i + 1}.jpeg`;
+      const filename = req.user?.id ? `user-${req.user._id}-${Date.now()}-${i + 1}.jpeg` : `user-${Math.random()}-${Date.now()}-${i + 1}.jpeg`
 
       await sharp(file.buffer)
         .resize(2400, 1600)
@@ -93,6 +93,26 @@ exports.searchUsers = catchAsync(async (req, res, next) => {
       });
   }
 });
+
+exports.getUserCount = catchAsync(async (req, res, next) => {
+    let filter = {};
+    console.log("user count....")
+    if (req.params.id) filter = { user: req.params.id };
+
+    // Create an APIFeatures instance to filter the Model based on the provided query
+    // const features = new APIFeatures(User.find(filter), req.query).filter();
+
+    // Execute the countDocuments method to get the total count of documents
+    const totalCount = await User.countDocuments();
+
+    // Send the response with the total count of users
+    res.status(200).json({
+      status: "success",
+      message: `Total user count: ${totalCount}`,
+      totalCount,
+    });
+  });
+
 
 exports.getAllUsers = factory.getAll(User);
 exports.getOneUser = factory.getOne(User);

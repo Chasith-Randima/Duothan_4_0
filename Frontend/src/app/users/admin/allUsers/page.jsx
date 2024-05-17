@@ -218,6 +218,8 @@ const AllUsers = () => {
     // }
     let token = getCookie("token_user");
 
+    params.role = "user"
+
     await getAllUsers(params, token)
       .then((data) => {
         console.log(data);
@@ -338,7 +340,7 @@ const AllUsers = () => {
                     <tr className="text-xs text-left text-gray-500 border-b border-gray-200 dark:border-gray-800">
                       <th className="flex items-center py-3 pl-6 font-medium dark:text-gray-400">
                         {/* <input className="mr-4" type="checkbox" name="" id="" /> */}
-                        <span>No.</span>
+                        <span>DTP CODE</span>
                       </th>
                       <th className="px-6 py-3 font-medium dark:text-gray-400">
                         Username
@@ -369,7 +371,15 @@ const AllUsers = () => {
                           >
                             <td className="flex items-center px-6 py-3 text-sm font-medium">
                               {/* <input className="mr-4" type="checkbox" name="" id="" /> */}
-                              <p className="dark:text-gray-400">{user._id}</p>
+                              {/* <p className="dark:text-gray-400"     onClick={()=> goTo(`/users/admin/singleUserDetials?userId=${user._id}`)}>{user._id}</p> */}
+                              <p className="dark:text-gray-400"     onClick={()=> goTo(`/users/admin/singleUserDetials?userId=${user._id}`)}>{user.dtpCode}</p>
+                              {/* <span
+                                className="inline-block px-2 py-1 text-green-700 bg-green-100 rounded-md dark:bg-gray-800 dark:text-gray-400 cursor-pointer"
+                       
+                                onClick={()=> goTo(`/users/updateUser?userId=${user._id}`)}
+                              >
+                                Update
+                              </span> */}
                             </td>
                             <td className="px-6 text-sm font-medium dark:text-gray-400">
                               {user.username}

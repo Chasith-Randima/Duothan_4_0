@@ -41,6 +41,8 @@ exports.signup = catchAsync(async (req, res, next) => {
     email: req.body.email,
     password: req.body.password,
     passwordConfirm: req.body.passwordConfirm,
+    mobileNumber:req.body.mobileNumber,
+    role:req.body.role
   });
 
   if (!user) {

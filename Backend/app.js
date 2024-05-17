@@ -16,6 +16,8 @@ const commentRouter = require("./routes/commentRoute");
 const websiteRouter = require("./routes/websiteRoute");
 const scrapeRouter = require("./routes/scrapeRoute");
 const newScrapeRouter = require("./routes/newScrapeRoute");
+const paymentRouter = require("./routes/paymentRoute")
+const punchRouter = require("./routes/punchRoute")
 
 app.use(express.json({ extended: true, limit: "10mb" }));
 app.use(cookieParser());
@@ -37,6 +39,8 @@ app.use("/api/v1/comments", commentRouter);
 app.use("/api/v1/websites", websiteRouter);
 app.use("/api/v1/scrapes", scrapeRouter);
 app.use("/api/v1/newscrapes", newScrapeRouter);
+app.use("/api/v1/payments", paymentRouter);
+app.use("/api/v1/punches", punchRouter);
 
 
 // function to send request to scrape api

@@ -9,8 +9,11 @@ router.get("/logout", authController.logout);
 
 router.use("/image/:imageName", userController.getImage);
 router.use("/search", userController.searchUsers);
+// router.use("/search", userController.getUserCount);
 
-router.use(authController.protect);
+router.get("/userCount",userController.getUserCount)
+
+// router.use(authController.protect);
 
 router.patch("/updateMyPassword/:id", authController.updatePassword);
 

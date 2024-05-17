@@ -24,6 +24,25 @@ export const getProfile = (id, token) => {
       return err;
     });
 };
+export const getUserCount = () => {
+  // console.log(token, id, "from user action");
+  let url = `${API}/users/userCount`;
+
+  return fetch(url, {
+    method: "GET",
+    headers: {
+      Accept: "application/json",
+      // Authorization: `Bearer ${token}`,
+    },
+  })
+    .then((response) => {
+      return response.json();
+    })
+    .catch((err) => {
+      console.log(err);
+      return err;
+    });
+};
 
 export const updateProfile = (id, user, token) => {
   let url = `${API}/users/${id}`;

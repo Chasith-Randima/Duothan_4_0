@@ -16,6 +16,9 @@ const userSchema = new mongoose.Schema(
       type: String,
     //   required: [true, "please tell us your Last Name"],
     },
+    mobileNumber:{
+      type:String
+    },
     email: {
       type: String,
       required: [true, "Please tell us your Email"],
@@ -38,6 +41,9 @@ const userSchema = new mongoose.Schema(
         message: "Passwords are not the same",
       },
     },
+    dtpCode:{
+      type:String
+    },
     role: {
       type: String,
       enum: ["user", "admin","bus"],
@@ -48,14 +54,29 @@ const userSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+
+function transformFloatToInt(floatNum, significantDigits) {
+  const multiplier = Math.pow(10, significantDigits - 1);
+  const transformedNum = Math.floor(floatNum * multiplier);
+  return transformedNum;
+}
 userSchema.pre("save", async function (next) {
   if (!this.isModified("password")) return next();
 
   this.password = await bcrypt.hash(this.password, 12);
+  this.dtpCode = transformFloatToInt(Math.random(),7)
 
   this.passwordConfirm = undefined;
   next();
 });
+// userSchema.pre("save", async function (next) {
+//   if (!this.isModified("dtpCode")) return next();
+
+//   this.dtpCode = await Math.random(5)
+
+//   // this.passwordConfirm = undefined;
+//   next();
+// });
 
 userSchema.pre("save", function (next) {
   if (!this.isModified("password") || this.isNew) return next();
